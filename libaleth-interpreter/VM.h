@@ -65,12 +65,12 @@ class VM
 public:
     VM() = default;
 
-    owning_bytes_ref exec(evmc_context* _context, evmc_revision _rev, const evmc_message* _msg,
+    owning_bytes_ref exec(evmc_host_context* _context, evmc_revision _rev, const evmc_message* _msg,
         uint8_t const* _code, size_t _codeSize);
 
     uint64_t m_io_gas = 0;
 private:
-    evmc_context* m_context = nullptr;
+    evmc_host_context* m_context = nullptr;
     evmc_revision m_rev = EVMC_FRONTIER;
     evmc_message const* m_message = nullptr;
     boost::optional<evmc_tx_context> m_tx_context;

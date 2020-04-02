@@ -200,7 +200,7 @@ struct CreateResult
 /**
  * @brief Interface and null implementation of the class for specifying VM externalities.
  */
-class ExtVMFace: public evmc_context
+class ExtVMFace: public evmc_host_context
 {
 public:
     /// Full constructor.

@@ -31,7 +31,7 @@ static_assert(alignof(Address) == alignof(evmc_address), "Address types alignmen
 static_assert(sizeof(h256) == sizeof(evmc_uint256be), "Hash types size mismatch");
 static_assert(alignof(h256) == alignof(evmc_uint256be), "Hash types alignment mismatch");
 
-bool accountExists(evmc_context* _context, evmc_address const* _addr) noexcept
+bool accountExists(evmc_host_context* _context, evmc_address const* _addr) noexcept
 {
     auto& env = static_cast<ExtVMFace&>(*_context);
     Address addr = fromEvmC(*_addr);
@@ -39,7 +39,7 @@ bool accountExists(evmc_context* _context, evmc_address const* _addr) noexcept
 }
 
 evmc_bytes32 getStorage(
-    evmc_context* _context, evmc_address const* _addr, evmc_uint256be const* _key) noexcept
+    evmc_host_context* _context, evmc_address const* _addr, evmc_uint256be const* _key) noexcept
 {
     (void) _addr;
     auto& env = static_cast<ExtVMFace&>(*_context);
@@ -48,7 +48,7 @@ evmc_bytes32 getStorage(
     return toEvmC(env.store(key));
 }
 
-evmc_storage_status setStorage(evmc_context* _context, evmc_address const* _addr,
+evmc_storage_status setStorage(evmc_host_context* _context, evmc_address const* _addr,
     evmc_uint256be const* _key, evmc_uint256be const* _value) noexcept
 {
     (void)_addr;
@@ -98,25 +98,25 @@ evmc_storage_status setStorage(evmc_context* _context, evmc_address const* _addr
     return status;
 }
 
-evmc_uint256be getBalance(evmc_context* _context, evmc_address const* _addr) noexcept
+evmc_uint256be getBalance(evmc_host_context* _context, evmc_address const* _addr) noexcept
 {
     auto& env = static_cast<ExtVMFace&>(*_context);
     return toEvmC(env.balance(fromEvmC(*_addr)));
 }
 
-size_t getCodeSize(evmc_context* _context, evmc_address const* _addr)
+size_t getCodeSize(evmc_host_context* _context, evmc_address const* _addr)
 {
     auto& env = static_cast<ExtVMFace&>(*_context);
     return env.codeSizeAt(fromEvmC(*_addr));
 }
 
-evmc_bytes32 getCodeHash(evmc_context* _context, evmc_address const* _addr)
+evmc_bytes32 getCodeHash(evmc_host_context* _context, evmc_address const* _addr)
 {
     auto& env = static_cast<ExtVMFace&>(*_context);
     return toEvmC(env.codeHashAt(fromEvmC(*_addr)));
 }
 
-size_t copyCode(evmc_context* _context, evmc_address const* _addr, size_t _codeOffset,
+size_t copyCode(evmc_host_context* _context, evmc_address const* _addr, size_t _codeOffset,
     byte* _bufferData, size_t _bufferSize)
 {
     auto& env = static_cast<ExtVMFace&>(*_context);
@@ -134,7 +134,7 @@ size_t copyCode(evmc_context* _context, evmc_address const* _addr, size_t _codeO
 }
 
 void selfdestruct(
-    evmc_context* _context,
+    evmc_host_context* _context,
     evmc_address const* _addr,
     evmc_address const* _beneficiary
 ) noexcept
@@ -147,7 +147,7 @@ void selfdestruct(
 
 
 void log(
-    evmc_context* _context,
+    evmc_host_context* _context,
     evmc_address const* _addr,
     uint8_t const* _data,
     size_t _dataSize,
@@ -163,7 +163,7 @@ void log(
             bytesConstRef{_data, _dataSize});
 }
 
-evmc_tx_context getTxContext(evmc_context* _context) noexcept
+evmc_tx_context getTxContext(evmc_host_context* _context) noexcept
 {
     auto& env = static_cast<ExtVMFace&>(*_context);
     evmc_tx_context result = {};
@@ -177,7 +177,7 @@ evmc_tx_context getTxContext(evmc_context* _context) noexcept
     return result;
 }
 
-evmc_bytes32 getBlockHash(evmc_context* _envPtr, int64_t _number)
+evmc_bytes32 getBlockHash(evmc_host_context* _envPtr, int64_t _number)
 {
     auto& env = static_cast<ExtVMFace&>(*_envPtr);
     return toEvmC(env.blockHash(_number));
@@ -228,7 +228,7 @@ evmc_result create(ExtVMFace& _env, evmc_message const* _msg) noexcept
     return evmcResult;
 }
 
-evmc_result call(evmc_context* _context, evmc_message const* _msg) noexcept
+evmc_result call(evmc_host_context* _context, evmc_message const* _msg) noexcept
 {
     assert(_msg->gas >= 0 && "Invalid gas value");
     auto& env = static_cast<ExtVMFace&>(*_context);
@@ -298,7 +298,7 @@ evmc_host_interface const hostInterface = {
 ExtVMFace::ExtVMFace(EnvInfo const& _envInfo, Address _myAddress, Address _caller, Address _origin,
     u256 _value, u256 _gasPrice, bytesConstRef _data, bytes _code, h256 const& _codeHash,
     unsigned _depth, bool _isCreate, bool _staticCall)
-  : evmc_context{&hostInterface},
+  : evmc_host_context{&hostInterface},
     m_envInfo(_envInfo),
     myAddress(_myAddress),
     caller(_caller),

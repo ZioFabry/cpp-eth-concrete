@@ -38,7 +38,7 @@ void delete_output(const evmc_result* result)
     delete[] result->output_data;
 }
 
-evmc_result execute(evmc_instance* _instance, evmc_context* _context, evmc_revision _rev,
+evmc_result execute(evmc_instance* _instance, evmc_host_context* _context, evmc_revision _rev,
     const evmc_message* _msg, uint8_t const* _code, size_t _codeSize) noexcept
 {
     (void)_instance;
@@ -261,7 +261,7 @@ evmc_tx_context const& VM::getTxContext()
 //
 // interpreter entry point
 
-owning_bytes_ref VM::exec(evmc_context* _context, evmc_revision _rev, const evmc_message* _msg,
+owning_bytes_ref VM::exec(evmc_host_context* _context, evmc_revision _rev, const evmc_message* _msg,
     uint8_t const* _code, size_t _codeSize)
 {
     m_context = _context;
